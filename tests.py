@@ -67,11 +67,42 @@ def minDif():
         minDif = min(minDif, abs(nums[i] - nums[i - 1]))   
     print(minDif)
     
+def minDifWithPosition():
+    count = input()
+    chars = input().split()   
+    nums = [int(item) for item in chars]
+    
+    #创建一个key-value
+    map = {}
+    
+    # 存储index
+    for i in range(len(nums)):
+        map[nums[i]] = i
+    
+    #先排序 O(nlongn)
+    nums.sort()
+    minDif = float('inf')
+    start = 0
+    end = 0
+    for i in range(1, len(nums)):
+        value = abs(nums[i] - nums[i - 1])
+        if (value < minDif):
+            start = map.get(nums[i])
+            end = map.get(nums[i - 1])
+            minDif = value
+    print(minDif, end=' ')
+    if(start > end):
+        print(end + 1, end=' ')
+        print(start + 1, end=' ')
+    else:
+        print(start + 1, end=' ')
+        print(end + 1, end=' ')
+    
      
         
 
 def main():
-    minDif()
+    minDifWithPosition()
 
 if __name__ == '__main__':
     main()
