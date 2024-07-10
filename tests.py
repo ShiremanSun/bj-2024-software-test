@@ -98,11 +98,65 @@ def minDifWithPosition():
         print(start + 1, end=' ')
         print(end + 1, end=' ')
     
-     
+def sumOf16():
+   try:
+     while True:
+        chars = input().split()
+        nums = [int(item, 16) for item in chars]
+        sum = 0
+        for num in nums:
+            sum += num
+        print(sum)
+   except EOFError:
+       return
+
+def dateFormat():
+    try:
+        while True:
+            dates = input().split('-')
+            result = ''
+            if len(dates[1]) < 2:
+                result+='0'
+            result += dates[1]
+            result +='/'
+            if len(dates[2]) < 2:
+                result+='0'
+            result += dates[2]
+            result += '/'
+            result += dates[0]
+            print(result)
+    except EOFError:
+        return
+def equivalentStrings():
+
+    first = list(input())
+    second = list(input())
+    firstMap = {}
+    secondMap = {}
+    for i in range(len(first)):
+        if not firstMap.get(first[i]):
+            firstMap[first[i]] = 1
+        else:
+            firstMap[first[i]] += 1
+    
+    for i in range(len(second)):
+        if not secondMap.get(second[i]):
+            secondMap[second[i]] = 1
+        else:
+            secondMap[second[i]] += 1 
+    firstCount = sorted(firstMap.values())
+    secondCount = sorted(secondMap.values())
+    if firstCount == secondCount:
+        print("YES")
+    else:
+        print("NO")
+    
+    
+    
         
 
 def main():
-    minDifWithPosition()
+    equivalentStrings()
 
 if __name__ == '__main__':
     main()
