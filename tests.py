@@ -150,13 +150,52 @@ def equivalentStrings():
         print("YES")
     else:
         print("NO")
+
+def findCard():
+    cases = 1
+    try:
+        while True:
+            nq = input().split()
+            n = int(nq[0])
+            q = int(nq[1])
+            inputs = sorted([int(item) for item in input().split()])
+            targets = [int(item) for item in input().split()]
+            print(f"Case #{cases}:")
+            for i in range(len(targets)):
+                try:
+                    index = inputs.index(targets[i]) + 1
+                    print(f"{targets[i]} found at {index}")
+                except ValueError:
+                    print(f"{targets[i]} not found")
+
+            cases+=1
+    except EOFError:
+        return
+
+def printUniqueNum():
+    try:
+        input()
+        nums = sorted([int(item) for item in input().split()], reverse=True)
+        appeared = []
+        for num in nums:
+            if appeared.count(num) > 0:
+                continue
+            else:
+                appeared.append(num)
+                print(num, end=' ')
+        print()
+    except EOFError:
+        return
+             
+def stringsReflect():
+    return
     
     
     
         
 
 def main():
-    equivalentStrings()
+    printUniqueNum()
 
 if __name__ == '__main__':
     main()
