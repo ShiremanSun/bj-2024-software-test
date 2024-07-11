@@ -226,11 +226,42 @@ def bigSum():
             print(nums[0] + nums[1])
     except EOFError:
         return
-    
-        
-
+def findCard2():
+    cases = 1
+    try:
+        while True:
+            nq = input().split()
+            n = int(nq[0])
+            q = int(nq[1])
+            origins = [int(item) for item in input().split()]
+            inputs = sorted(origins)
+            targets = [int(item) for item in input().split()]
+            print(f"Case #{cases}:")
+            for i in range(len(targets)):
+                try:
+                    index = inputs.index(targets[i]) + 1
+                    origin = origins.index(targets[i]) + 1
+                    print(f"{targets[i]} from {origin } to {index}")
+                except ValueError:
+                    print(f"{targets[i]} not found")
+            cases+=1
+    except EOFError:
+        return
+def buildingBlock():
+    first = True
+    lists = list(list())
+    while True:
+        char = input()
+        if char == 'q':
+            #打印每个数组的结果
+            print()
+            break
+        if first:
+            n = int()
+            #初始化每一列
+        first = False
 def main():
-    bigSum()
+    findCard2()
 
 if __name__ == '__main__':
     main()
