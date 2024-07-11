@@ -1,3 +1,4 @@
+from collections import defaultdict
 
 
 def sum1():
@@ -188,14 +189,48 @@ def printUniqueNum():
         return
              
 def stringsReflect():
+    first = list(input())
+    second = list(input())
+    firstMap = {}
+    secondMap = {}
+    for i in range(len(first)):
+        if not firstMap.get(first[i]):
+            firstMap[first[i]] = 1
+        else:
+            firstMap[first[i]] += 1
+    
+    for i in range(len(second)):
+        if not secondMap.get(second[i]):
+            secondMap[second[i]] = 1
+        else:
+            secondMap[second[i]] += 1 
+    firstCount = sorted(firstMap.values())
+    secondCount = sorted(secondMap.values())
+    if firstCount == secondCount:
+        print("YES")
+        for key, value in firstMap.copy().items():
+            for key1, value2 in secondMap.copy().items():
+                if value == value2:
+                    print(f'{key}->{key1}', end=' ')
+                    del secondMap[key1]
+                    break
+    else:
+        print("NO")
     return
     
-    
+
+def bigSum():
+    try:
+        while True:
+            nums = [int(item) for item in input().split()]
+            print(nums[0] + nums[1])
+    except EOFError:
+        return
     
         
 
 def main():
-    printUniqueNum()
+    bigSum()
 
 if __name__ == '__main__':
     main()
