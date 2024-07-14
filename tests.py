@@ -247,21 +247,346 @@ def findCard2():
             cases+=1
     except EOFError:
         return
-def buildingBlock():
-    first = True
-    lists = list(list())
+
+def initialize_blocks(n):
+    return [[i] for i in range(n)]
+
+def find_block_position(blocks, block):
+    for pile in blocks:
+        if block in pile:
+            return pile, pile.index(block)
+    return None, None
+
+def return_to_initial(blocks, pile, index):
+    # 仅将索引 index 之后的所有积木块放回初始位置
+    to_return = pile[index+1:]
+    for block in to_return:
+        blocks[block].append(block)
+    del pile[index+1:]
+
+def move_onto(blocks, a, b):
+    pile_a, index_a = find_block_position(blocks, a)
+    pile_b, index_b = find_block_position(blocks, b)
+
+    if pile_a is pile_b or a == b:
+        return
+
+    return_to_initial(blocks, pile_a, index_a)
+    return_to_initial(blocks, pile_b, index_b)
+
+    pile_b.append(pile_a.pop(index_a))
+
+def move_over(blocks, a, b):
+    pile_a, index_a = find_block_position(blocks, a)
+    pile_b, _ = find_block_position(blocks, b)
+
+    if pile_a is pile_b or a == b:
+        return
+
+    return_to_initial(blocks, pile_a, index_a)
+
+    pile_b.append(pile_a.pop(index_a))
+
+def stack_onto(blocks, a, b):
+    pile_a, index_a = find_block_position(blocks, a)
+    pile_b, index_b = find_block_position(blocks, b)
+
+    if pile_a is pile_b or a == b:
+        return
+
+    return_to_initial(blocks, pile_b, index_b)
+
+    pile_b.extend(pile_a[index_a:])
+    del pile_a[index_a:]
+
+def stack_over(blocks, a, b):
+    pile_a, index_a = find_block_position(blocks, a)
+    pile_b, _ = find_block_position(blocks, b)
+
+    if pile_a is pile_b or a == b:
+        return
+
+    pile_b.extend(pile_a[index_a:])
+    del pile_a[index_a:]
+
+def swap_columns(blocks, a, b):
+    pile_a, _ = find_block_position(blocks, a)
+    pile_b, _ = find_block_position(blocks, b)
+
+    if pile_a is pile_b or a == b:
+        return
+
+    # 交换两列
+    blocks[blocks.index(pile_a)], blocks[blocks.index(pile_b)] = blocks[blocks.index(pile_b)], blocks[blocks.index(pile_a)]
+
+def building_blocks():
+    n = int(input())
+    blocks = initialize_blocks(n)
+    commands = list()
     while True:
-        char = input()
-        if char == 'q':
-            #打印每个数组的结果
-            print()
+        input_str = input()
+        if (input_str == "q"):
+            commands.append(input_str)
             break
-        if first:
-            n = int()
-            #初始化每一列
-        first = False
+        else:
+            commands.append(input_str)
+    for command in commands:
+        if command == "q":
+            break
+        
+        parts = command.split()
+        
+        if len(parts) != 4:
+            continue
+        
+        action, a_str, preposition, b_str = parts
+        a, b = int(a_str), int(b_str)
+        
+        if action == "mv":
+            if preposition == "on":
+                move_onto(blocks, a, b)
+            elif preposition == "ov":
+                move_over(blocks, a, b)
+        elif action == "st":
+            if preposition == "on":
+                stack_onto(blocks, a, b)
+            elif preposition == "ov":
+                stack_over(blocks, a, b)
+        elif action == "xh" and preposition == "an":
+            swap_columns(blocks, a, b)
+    
+    for i, pile in enumerate(blocks):
+        if len(pile) == 0:
+            print(f"{i}:")
+        else:
+            print(f"{i}: {' '.join(map(str, pile))}")
+import heapq
+def generate_sequences(limit):
+    # 使用最小堆
+    heap = []
+    heapq.heappush(heap, 1)
+    # 使用集合防止重复
+    seen = {1}
+    # 预先生成前 limit 个丑数
+    ugly_numbers = []
+    for _ in range(limit):
+        smallest = heapq.heappop(heap)
+        ugly_numbers.append(smallest)
+        for factor in [2, 3, 5]:
+            new_ugly = smallest * factor
+            if new_ugly not in seen:
+                seen.add(new_ugly)
+                heapq.heappush(heap, new_ugly)
+    
+    return ugly_numbers
+def ugly_numbers():
+    
+    # 设定生成丑数的上限
+    limit = 10000
+    ugly_numbers = generate_sequences(limit)
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    
+    for line in data:
+        n = int(line)
+        print(ugly_numbers[n - 1])
+
+import sys
+from collections import defaultdict
+
+def find_special_words():
+    input = sys.stdin.read
+    data = input().strip().splitlines()
+    
+    word_dict = defaultdict(list)
+    first_appearance = defaultdict(str)
+    
+    for line in data:
+        if line.strip() == "#":
+            break
+        words = line.split()
+        for word in words:
+            normalized = ''.join(sorted(word.lower()))
+            word_dict[normalized].append(word)
+            if normalized not in first_appearance:
+                first_appearance[normalized] = word
+    
+    special_words_set = set()
+    for normalized, originals in word_dict.items():
+        originals = set(originals)
+        if len(originals) > 1:
+            special_words_set.add(first_appearance[normalized])
+    
+    special_words_list = sorted(special_words_set, key=lambda x: x)
+    for word in special_words_list:
+        print(word)
+
+
+def format_files(filenames, width):
+    # 按字典序排序文件名
+    filenames.sort()
+    # 计算文件名的最大长度
+    max_length = max(len(name) for name in filenames)
+
+    # 计算一行可以包含的文件名数量（列数）
+    cols = (width + 2) // (max_length + 2)
+    if cols == 0:
+        cols = 1
+
+    # 计算列数
+    # 确保列数至少为 1
+    if cols == 0:
+        cols = 1
+
+    # 计算所需的行数
+    rows = (len(filenames) + cols - 1) // cols
+
+    # 将文件名按列分布
+    grid = [['' for _ in range(cols)] for _ in range(rows)]
+    
+    for i in range(rows):
+        for j in range(cols):
+            if i == 0:  
+                if j == 0:
+                    grid[0][0] = filenames[0]
+                else:
+                    grid[i][j] = filenames[j * rows]
+            else:
+                if(grid[i - 1][j] == ''):
+                    continue
+                index = filenames.index(grid[i - 1][j]) + 1
+                if index < len(filenames):
+                    grid[i][j] = filenames[index] 
+            
+
+    # 打印格式化后的文件名
+    for row in grid:
+        line = ""
+        for i in range(cols):
+            if i < cols - 1 and row[i]:
+                line += f"{row[i]:<{max_length}}  "
+            else:
+                line += f"{row[i]:<{max_length}}"
+        print(line.strip())
+def formatMenu():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().splitlines()
+    i = 0
+
+    while i < len(data):
+        # n是文件数，w是宽度
+        n, w = map(int, data[i].split())
+        # 
+        filenames = [data[j] for j in range(i+1, i+1+n)]
+        i += 1 + n
+
+        if n == 0:
+            continue
+
+        # 输出分隔符线
+        print('-' * w)
+
+        # 格式化并输出文件名
+        format_files(filenames, w)
+
+import sys
+import re
+from collections import defaultdict
+def process_text():
+    input = sys.stdin.read
+    data = input().strip().splitlines()
+    
+    word_count = defaultdict(int)
+
+    for line in data:
+        # 去除以's结尾的单词的's
+        line = re.sub(r"\b(\w+)'s\b", r"\1", line)
+        # 去除其他标点符号并将所有字符转换为小写
+        line = re.sub(r"[^\w\s-]", "", line).lower()
+        # 分割单词，对连字符处理
+        words = re.split(r"[\s-]+", line)  # 对空格和连字符进行分割
+        
+        for word in words:
+            if word:  # 只处理非空单词
+                word_count[word] += 1
+
+    sorted_words = sorted(
+        word_count.items(),
+        key=lambda x: (-x[1], x[0])
+    )
+    
+    for word, count in sorted_words:
+        print(word)
+
+def find_magic_numbers(x, N):
+    results = []
+    for a in range(1, N+1):
+        for b in range(a, N+1):
+            for c in range(b, N+1):
+                d_value = a ** x + b ** x + c ** x
+                d = int(round(d_value ** (1 / x)))  # 取整数并四舍五入
+                # 检查 d 是否正确，并且在范围 1 到 N 以内
+                if d ** x == d_value and 1 <= d <= N:
+                    results.append((a, b, c, d))
+    return results
+def magic_num():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().splitlines()
+    
+    case_number = 1
+    
+    for line in data:
+        if line.strip():
+            x, N = map(int, line.split())
+            results = find_magic_numbers(x, N)
+            print(f"Case {case_number}:")
+            if results:
+                for a, b, c, d in results:
+                    print(f"{a}^{x}+{b}^{x}+{c}^{x}={d}^{x}")
+            else:
+                print("No such numbers.")
+            
+            case_number += 1
+
+def find_max_product(nums):
+    n = len(nums)
+    max_product = float('-inf')
+    start = end = 0
+    #暴力穷举
+    for i in range(n):
+        product = 1
+        for j in range(i, n):
+            product *= nums[j]
+            if product > max_product:
+                max_product = product
+                start, end = i, j
+            elif product == max_product:
+                # 范围最小序列
+                if (j - i) < (end - start):
+                    start, end = i, j
+                # 起始最小序列
+                elif (j - i) == (end - start) and i < start:
+                    start, end = i, j
+    return max_product, start, end
+
+def max_product():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().splitlines()
+    case_number = 1
+    for line in data:
+        if line.strip():
+            nums = list(map(int, line.split()))
+            max_product, start, end = find_max_product(nums)
+            print(f"Case {case_number}: {max_product} {start}-{end}")
+            case_number += 1
+
 def main():
-    findCard2()
+    max_product()
+    
 
 if __name__ == '__main__':
     main()
