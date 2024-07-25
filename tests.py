@@ -572,6 +572,8 @@ def find_max_product(nums):
                     start, end = i, j
     return max_product, start, end
 
+
+#最大乘积
 def max_product():
     import sys
     input = sys.stdin.read
@@ -584,8 +586,175 @@ def max_product():
             print(f"Case {case_number}: {max_product} {start}-{end}")
             case_number += 1
 
+def find_magic_numbers(N):
+    results = []
+    
+    for denominator in range(1234, 98766):
+        #左侧添0
+        denominator_str = str(denominator).zfill(5)
+        if len(set(denominator_str)) != 5:
+            continue
+        numerator = denominator * N 
+        numerator_str = str(numerator).zfill(5)
+        
+        if len(numerator_str) > 5:
+            continue
+        
+        combined = numerator_str + denominator_str
+        if len(set(combined)) == 10:
+            results.append((numerator_str, denominator_str))
+    
+    return results
+#神奇的等式
+def magic_equation():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split()
+
+    case_number = 1
+
+    for line in data:
+        if line.strip():
+            N = int(line.strip())
+            results = find_magic_numbers(N)
+
+            print(f"Case {case_number}:")
+            if results:
+                for numerator, denominator in sorted(results, key=lambda x: -int(x[1])):
+                    print(f"    {numerator}/{denominator}={N}")
+            else:
+                print(f"    No such numbers")
+
+            case_number += 1
+                
+
+#生成序列
+def split_string_with_offsets(content, n_values):
+    results = []
+    case_number = 1
+
+    for N in n_values:
+        case_result = [f"Case {case_number}:"]
+        len_content = len(content)
+        for offset in range(1, N + 1):
+            substrings = []
+
+            # 先输出 offset 个字符
+            substrings.append(content[:offset])
+
+            # 按 N 间隔输出子串
+            for j in range(offset, len_content, N):
+                substrings.append(content[j:j+N])
+
+            case_result.append(" ".join(substrings))
+        results.append("\n".join(case_result))
+        case_number += 1
+    
+    return results
+
+
+def find_sub_sequence():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split("\n")
+    
+    if len(data) < 1:
+        return
+    
+    content = data[0]  # 第一行是字符串内容
+    n_values = list(map(int, data[1:]))  # 剩余的每行为一个N值
+    
+    results = split_string_with_offsets(content, n_values)
+    
+    for result in results:
+        print(result)
+
+from collections import deque
+# 排队
+def process_commands(groups, commands):
+    queue = deque()
+    group_relation = {}
+    #建立成员到组的映射
+    for group in groups:
+        members = group.split()[1:]
+        for member in members:
+            group_relation[member] = members
+    
+    results = []
+    
+    for command in commands:
+        if command.startswith("enqueue"):
+            _, member = command.split()
+            if member in group_relation:
+                inserted = False
+                for i, person in enumerate(queue):
+                    if person in group_relation[member]:
+                        while i+1 < len(queue) and queue[i+1] in group_relation[member]:
+                            i += 1
+                        queue.insert(i+1, member)
+                        inserted = True
+                        break
+                if not inserted:
+                    queue.append(member)
+            else:
+                queue.append(member)
+        
+        elif command == "dequeue":
+            if queue:
+                person = queue.popleft()
+                results.append(person)
+        
+        elif command.startswith("deqteam"):
+            _, member = command.split()
+            if member in group_relation:
+                group_members = group_relation[member]
+                removed_members = []
+                for person in list(queue):
+                    if person in group_members:
+                        queue.remove(person)
+                        removed_members.append(person)
+                if removed_members:
+                    results.append(" ".join(removed_members))
+
+    return results
+
+def line():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split("\n")
+    case_number = 1
+    index = 0
+    
+    while index < len(data):
+        # 行数
+        g = int(data[index].strip())
+        if g == 0:
+            break
+        index += 1
+        groups = []
+        for _ in range(g):
+            groups.append(data[index].strip())
+            index += 1
+        
+        commands = []
+        #actions
+        while index < len(data) and data[index].strip() != "stop":
+            commands.append(data[index].strip())
+            index += 1
+        
+        index += 1 
+        
+        results = process_commands(groups, commands)
+        
+        print(f"Case #{case_number}:")
+        for result in results:
+            print(result)
+        
+        case_number += 1
+
+
 def main():
-    max_product()
+    line()
     
 
 if __name__ == '__main__':
