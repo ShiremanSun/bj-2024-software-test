@@ -718,6 +718,7 @@ def process_commands(groups, commands):
 
     return results
 
+#排队
 def line():
     import sys
     input = sys.stdin.read
@@ -752,9 +753,113 @@ def line():
         
         case_number += 1
 
+def is_equivalent(A, target):
+    stack = []
+    i = 0
+    for char in A:
+        stack.append(char)
+        while stack and stack[-1] == target[i]:
+            i += 1
+            stack.pop()
+    return i == len(target)
+
+    # 所有字符都放入 C 后，判断是否等于目标字符串
+    return B == target
+def string_transformer():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split("\n")
+    
+    case_number = 1
+    results = []
+
+    for i in range(0, len(data), 2):
+        A = data[i].strip()
+        target = data[i + 1].strip()
+        if is_equivalent(A, target):
+            print(f"Case {case_number}: Yes") 
+        else:
+            print(f"Case {case_number}: No") 
+        case_number += 1
+    
+    
+
+def find_peak_day(p, i, e, l, d, periods):
+    cycle_length = periods[0] * periods[1] * periods[2] * periods[3]
+    for day in range(d + 1, d + cycle_length + 1):
+        if (day - p) % periods[0] == 0 and (day - i) % periods[1] == 0 and (day - e) % periods[2] == 0 and (day - l) % periods[3] == 0:
+            return day - d
+    return "No such days." 
+def peak_day():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split("\n")
+    
+    case_number = 1
+    index = 0
+
+    while index < len(data):
+        if data[index].strip():
+            periods = list(map(int, data[index].strip().split()))
+            peaks = list(map(int, data[index + 1].strip().split()))
+            p, i, e, l, d = peaks
+            result = find_peak_day(p, i, e, l, d, periods)
+            print(f"Case {case_number}: {result}")
+            case_number += 1
+            index += 2
+def calculate_elevator_time(n, u, d, s, requests):
+    req = []
+    for request in requests:
+        from_floor, to_floor = map(int, request.split('-'))
+        req.append(from_floor)
+        req.append(to_floor)
+    req = sorted(req)
+    cur_floor = req[0]
+    cur_dir = 1
+    wait_req = []
+    wait_time = min(cur_floor * u + (n - cur_floor) * d, (n - cur_floor) * u + cur_floor * d) + s
+    for i in range(len(req)):
+        next_floor = req[i]
+        if next_floor == cur_floor:
+            continue
+        if (next_floor > cur_floor and cur_dir == 1) or (next_floor < cur_floor and cur_dir == -1):
+            wait_req.append(next_floor)
+        else:
+            wait_time += abs(cur_floor - wait_req[0]) * (u if cur_dir == 1 else d) + s
+            cur_floor = wait_req[0]
+            wait_req = wait_req[1:]
+            cur_dir = -cur_dir
+            i -= 1
+    while wait_req:
+        wait_time += abs(cur_floor - wait_req[0]) * (u if cur_dir == 1 else d) + s
+        cur_floor = wait_req[0]
+        wait_req = wait_req[1:]
+    wait_time += cur_floor * d + s
+    return wait_time
+        
+    
+        
+def elevator():
+    import sys
+    input = sys.stdin.read
+    data = input().strip().split("\n")
+    
+    case_number = 1
+    index = 0
+    
+    while index < len(data):
+        if data[index].strip():
+            N, u, d, s = map(int, data[index].strip().split())
+            requests = data[index + 1].strip().split()
+            
+            result = calculate_elevator_time(N, u, d, s, requests)
+            print(f"Case {case_number}: {result}")
+            
+            case_number += 1
+            index += 2
 
 def main():
-    line()
+    elevator()
     
 
 if __name__ == '__main__':
